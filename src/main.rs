@@ -31,6 +31,11 @@ enum Commands {
     },
 }
 
+/// Formats a full Vault URL from the base address and a KV path.
+fn format_vault_url(addr: &str, path: &str) -> String {
+    format!("{}/{}", addr.trim_end_matches('/'), path.trim_start_matches('/'))
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = Cli::parse();
@@ -38,11 +43,11 @@ async fn main() -> Result<()> {
 
     match cli.command {
         Commands::List { path } => {
+            let url = format_vault_url(&cfg.vault_addr, &path);
             println!(
-                "{} {}/{}",
+                "{} {}",
                 "Listing secrets at".cyan().bold(),
-                cfg.vault_addr.yellow(),
-                path.green()
+                url.green()
             );
             // TODO: implement Vault KV list via vault::Client
         }
